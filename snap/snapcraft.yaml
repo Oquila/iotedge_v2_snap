@@ -1,0 +1,54 @@
+name: iotedge # you probably want to 'snapcraft register <name>'
+#base: core18 # the base snap is the execution environment for this snap
+version: 'v2-preview' # just for humans, typically '1.2+git' or '1.3.2'
+summary: Snap for Azure IoT-Edge v2
+description: |
+    Snap to install Azure Iot-Edge v2 (https://github.com/Azure/iotedge)
+
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: devmode # use 'strict' once you have the right plugs and slots
+
+plugs:
+  support:
+    interface: docker-support
+  privileged:
+    interface: docker-support
+    privileged-containers: true
+  docker-cli:
+    interface: docker
+  docker-executables:
+    content: docker-executables
+    default-provider: docker
+    interface: content
+    target: docker-env
+
+apps:
+  iotedge:
+    command: /usr/bin/iotedged -c /$SNAP/etc/iotedge/config.yaml
+    daemon: notify
+    plugs: [network, docker-executables, docker-cli, privileged, home, network-bind]
+
+parts:
+  moby:
+    plugin: nil
+    stage-packages: 
+    - moby-engine
+    - moby-cli
+
+  iotedge:
+    after: [moby]
+    override-build: |
+      # Install repository configuration
+      curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > ./microsoft-prod.list
+      sudo cp ./microsoft-prod.list /etc/apt/sources.list.d/
+      # Install Microsoft GPG public key
+      curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+      sudo cp ./microsoft.gpg /etc/apt/trusted.gpg.d/
+      
+      sudo /sbin/ldconfig
+    # See 'snapcraft plugins'
+    plugin: nil
+    build-packages:
+    - iotedge
+    stage-packages:
+    - iotedge

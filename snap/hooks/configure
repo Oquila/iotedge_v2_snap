@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+cp "$(snapctl get config)" /$SNAP_DATA/config.yaml
