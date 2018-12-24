@@ -24,9 +24,9 @@ plugs:
 
 apps:
   iotedge:
-    command: /usr/bin/iotedged -c /$SNAP/etc/iotedge/config.yaml
-    daemon: notify
-    plugs: [network, docker-executables, docker-cli, privileged, home, network-bind]
+    command: /usr/bin/iotedged -c $SNAP_COMMON/config.yaml
+    #daemon: notify
+    plugs: [network, docker-executables, docker-cli, privileged, home, network-bind, daemon-notify]
 
 parts:
   moby:
