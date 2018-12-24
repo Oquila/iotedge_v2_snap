@@ -1,8 +1,0 @@
-#!/bin/sh -e
-
-sed -i "s#device_connection_string:.*#<CLEARED>#g" $SNAP_COMMON/config.yaml
-
-# Set the device connection string value
-if [ ! -z $(snapctl get deviceconnectionstring) ]; then
-        sed -i "s#device_connection_string:.*#device_connection_string: $(snapctl get deviceconnectionstring)#g" $SNAP_COMMON/config.yaml
-fi
