@@ -23,10 +23,15 @@ plugs:
     target: docker-env
 
 apps:
-  iotedge:
+  iotedged:
     command: /usr/bin/iotedged -c $SNAP_COMMON/config.yaml
+    #command: sh $SNAP/usr/bin/iotedge.start
+    #stop-command: sh $SNAP/usr/bin/iotedge.stop
     #daemon: notify
     plugs: [network, docker-executables, docker-cli, privileged, home, network-bind, daemon-notify]
+  iotedge:
+    command: /usr/bin/iotedge
+    plugs: [network, docker-executables, docker-cli, privileged, home, network-bind]
 
 parts:
   moby:
@@ -52,3 +57,10 @@ parts:
     - iotedge
     stage-packages:
     - iotedge
+
+  iotedgestart:
+    source: .
+    plugin: dump
+    organize:
+      iotedge.start: /usr/bin/iotedge.start
+      iotedge.stop: /usr/bin/iotedge.stop
